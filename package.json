@@ -1,0 +1,35 @@
+{
+  "name": "fusion-api",
+  "version": "0.1.0",
+  "description": "Self-hostable, provider-agnostic Fusion API — OpenAI-compatible multi-model ensemble (panel → judge → synthesizer) over local and cloud models.",
+  "type": "module",
+  "license": "MIT",
+  "engines": {
+    "node": ">=20.10"
+  },
+  "scripts": {
+    "start": "tsx src/index.ts",
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc --noEmit",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "biome check .",
+    "lint:fix": "biome check --write .",
+    "format": "biome format --write ."
+  },
+  "dependencies": {
+    "@hono/node-server": "^1.13.0",
+    "dotenv": "^16.4.0",
+    "hono": "^4.6.0",
+    "yaml": "^2.5.0",
+    "zod": "^3.23.0"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^1.9.0",
+    "@types/node": "^22.7.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.6.0",
+    "vitest": "^2.1.0"
+  }
+}

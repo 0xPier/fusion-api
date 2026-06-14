@@ -1,0 +1,58 @@
+# ─────────────────────────────────────────────────────────────
+# Fusion API config (optional). Point CONFIG_PATH at a copy of this.
+# Everything here is also settable via env vars; this file is for
+# the things env vars can't express cleanly (named models, presets,
+# allow/deny lists).
+#
+# NEVER put API keys here. Keys come from env (guardrail G2).
+# ─────────────────────────────────────────────────────────────
+
+server:
+  port: 3000
+
+# Provider allow/deny by provider id. Empty `allow` means "all allowed".
+# Deny always wins over allow.
+providers:
+  allow: [] # e.g. ["openrouter", "ollama"]
+  deny: [] # e.g. ["openai"]
+
+# Named model entries. Surfaced by GET /v1/models and referenceable by `id`
+# in fusion.analysis_models / judge / synthesizer.
+models:
+  - id: local-qwen
+    provider: ollama
+    model: qwen3
+    # base_url optional; falls back to OLLAMA_BASE_URL
+  - id: local-llama
+    provider: lmstudio
+    model: llama-3.1-8b-instruct
+  - id: cloud-sonnet
+    provider: openrouter
+    model: anthropic/claude-sonnet-4.5
+  - id: cloud-gpt
+    provider: openrouter
+    model: openai/gpt-4o
+  - id: cloud-gemini
+    provider: openrouter
+    model: google/gemini-2.5-pro
+
+# Optional per-preset overrides. Anything omitted uses the built-in defaults
+# in src/fusion/presets.ts. Model references are `id`s from `models` above,
+# OR inline { provider, model, base_url? } objects.
+presets:
+  quality:
+    analysis_models: [cloud-sonnet, cloud-gpt, cloud-gemini]
+    judge: { provider: openrouter, model: anthropic/claude-sonnet-4.5 }
+    synthesizer: { provider: openrouter, model: anthropic/claude-sonnet-4.5 }
+  budget:
+    analysis_models:
+      - cloud-gpt
+      - local-qwen
+    judge: { provider: openrouter, model: openai/gpt-4o-mini }
+    synthesizer: { provider: openrouter, model: openai/gpt-4o-mini }
+
+fusion:
+  default_preset: quality
+  max_panel_models: 8
+  timeout_ms: 120000
+  max_usd_per_request: null
