@@ -1,6 +1,6 @@
 # FACTS — Fusion API canonical reference
 
-> **Precedence rule:** If a fact here contradicts another doc (or your memory), **THIS FILE WINS.** Cite this file, not your memory. All facts are dated **2026-06-14**; **verify pricing against live provider pricing pages** before treating any cost number as authoritative.
+> **Precedence rule:** If a fact here contradicts another doc (or your memory), **THIS FILE WINS.** Cite this file, not your memory. Non-pricing facts are dated **2026-06-14**. Pricing values below are populated from `src/providers/pricing.ts` on **2026-06-15** and remain **pending verification** against live provider pricing pages; do not treat them as billing truth until the status column reads `VERIFIED`.
 
 ---
 
@@ -96,21 +96,57 @@
 
 ---
 
-## Illustrative PRICING table
+## Pricing table
 
-> **Every number below is `[PLACEHOLDER — verify]`.** Do **not** treat these as authoritative. Prices are per **1M tokens** unless noted. Once a value is verified against the live provider pricing page, correct it **here** — this file then wins for that fact. **Local models = $0** (`priced: false`).
+> Prices are USD per **1M tokens**. Values below are populated from `src/providers/pricing.ts` (2026-06-15) and remain **unverified** until checked against the live provider pricing pages. Once verified, change the status column to `VERIFIED`, update the date, and ensure `src/providers/pricing.ts` matches. **Local models = $0** (`priced: false`). This table is the source of truth for cost estimation.
 
-| Model | Input ($/1M) | Output ($/1M) | priced |
-| --- | --- | --- | --- |
-| openai/gpt-4o-class | `[PLACEHOLDER — verify]` | `[PLACEHOLDER — verify]` | true |
-| openai/gpt-4o-mini-class | `[PLACEHOLDER — verify]` | `[PLACEHOLDER — verify]` | true |
-| anthropic/claude-opus-class | `[PLACEHOLDER — verify]` | `[PLACEHOLDER — verify]` | true |
-| anthropic/claude-sonnet-class | `[PLACEHOLDER — verify]` | `[PLACEHOLDER — verify]` | true |
-| google/gemini-pro-class | `[PLACEHOLDER — verify]` | `[PLACEHOLDER — verify]` | true |
-| openrouter/<any-routed-model> | `[PLACEHOLDER — verify]` | `[PLACEHOLDER — verify]` | true |
-| ollama / lmstudio / llamacpp (any local model) | 0 | 0 | **false** |
+| Model | Input ($/1M) | Output ($/1M) | priced | Status | Verify at |
+| --- | --- | --- | --- | --- | --- |
+| **OpenAI (cloud)** |
+| `gpt-4o` | 2.50 | 10.00 | true | PENDING | https://openai.com/api/pricing |
+| `gpt-4o-mini` | 0.15 | 0.60 | true | PENDING | https://openai.com/api/pricing |
+| `gpt-4.1` | 2.00 | 8.00 | true | PENDING | https://openai.com/api/pricing |
+| `gpt-4.1-mini` | 0.40 | 1.60 | true | PENDING | https://openai.com/api/pricing |
+| `o4-mini` | 1.10 | 4.40 | true | PENDING | https://openai.com/api/pricing |
+| **OpenRouter namespaced** |
+| `openai/gpt-4o` | 2.50 | 10.00 | true | PENDING | https://openrouter.ai/models/openai/gpt-4o |
+| `openai/gpt-4o-mini` | 0.15 | 0.60 | true | PENDING | https://openrouter.ai/models/openai/gpt-4o-mini |
+| `anthropic/claude-sonnet-4.5` | 3.00 | 15.00 | true | PENDING | https://openrouter.ai/models/anthropic/claude-sonnet-4.5 |
+| `anthropic/claude-opus-4.1` | 15.00 | 75.00 | true | PENDING | https://openrouter.ai/models/anthropic/claude-opus-4.1 |
+| `anthropic/claude-haiku-4.5` | 1.00 | 5.00 | true | PENDING | https://openrouter.ai/models/anthropic/claude-haiku-4.5 |
+| `google/gemini-2.5-pro` | 1.25 | 10.00 | true | PENDING | https://openrouter.ai/models/google/gemini-2.5-pro |
+| `google/gemini-2.5-flash` | 0.30 | 2.50 | true | PENDING | https://openrouter.ai/models/google/gemini-2.5-flash |
+| **Anthropic native** |
+| `claude-sonnet-4-5` | 3.00 | 15.00 | true | PENDING | https://www.anthropic.com/pricing |
+| `claude-opus-4-1` | 15.00 | 75.00 | true | PENDING | https://www.anthropic.com/pricing |
+| `claude-haiku-4-5` | 1.00 | 5.00 | true | PENDING | https://www.anthropic.com/pricing |
+| **Gemini native** |
+| `gemini-2.5-pro` | 1.25 | 10.00 | true | PENDING | https://ai.google.dev/pricing |
+| `gemini-2.5-flash` | 0.30 | 2.50 | true | PENDING | https://ai.google.dev/pricing |
+| **Local** |
+| `ollama` / `lmstudio` / `llamacpp` (any model) | 0 | 0 | **false** | N/A | N/A |
 
-*Why it matters:* pricing feeds the cost cap (G3). A wrong price either lets a request through that should 402, or blocks one that's actually cheap. This is the **first owner open decision** in `docs/PROGRESS.md`: the owner must verify these.
+*Why it matters:* pricing feeds the preflight and mid-pipeline cost gates (G3). A wrong price either lets a request through that should 402, or blocks one that's actually cheap. This is the **first owner open decision** in `docs/PROGRESS.md`: the owner must verify these numbers against the live pages.
+
+### Verification checklist
+
+For each row with status `PENDING`, visit the **Verify at** URL, find the exact model id, and confirm the input/output price per 1M tokens. Then edit this table: change `PENDING` → `VERIFIED`, update the date above, and mirror the corrected value into `src/providers/pricing.ts`. Pay special attention to:
+
+1. **OpenRouter markups** — `openai/gpt-4o` via OpenRouter often costs more than direct OpenAI. Do not assume the direct-provider price applies to the OpenRouter row.
+2. **Context/cache discounts** — these are base prices; cached-input discounts are not modeled in v1.
+3. **New model versions** — model ids with date suffixes (e.g. `gpt-4o-2024-08-06`) are not in the table; the lookup falls back to `priced:false` for unknown ids.
+4. **Native vs. routed** — `anthropic/claude-sonnet-4.5` (OpenRouter) and `claude-sonnet-4-5` (native Anthropic) currently share the same placeholder prices; they may differ in reality.
+
+### Coverage check against presets
+
+All non-local models referenced by the built-in presets have a price row:
+
+- `fusion/quality`: `anthropic/claude-sonnet-4.5`, `openai/gpt-4o`, `google/gemini-2.5-pro` → covered.
+- `fusion/cloud-heavy`: `anthropic/claude-opus-4.1`, `openai/gpt-4.1`, `google/gemini-2.5-pro`, `anthropic/claude-sonnet-4.5` → covered.
+- `fusion/budget`: `openai/gpt-4o-mini` → covered; local `qwen3` → `$0 / priced:false`.
+- `fusion/local-heavy`: all local → `$0 / priced:false`.
+
+If you change a preset model, ensure a matching price row exists or the estimator will return `priced:false` and the cost cap will treat that model as free (which is correct for local models but risky for unknown cloud models).
 
 ---
 

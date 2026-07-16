@@ -34,7 +34,7 @@ The **judge + synthesizer are the quality bottleneck**; the **panel is the bread
 
 ### Value & honest limits
 
-- **Why cost can be a fraction:** cost is additive, so the win comes from panel composition. Local models cost **$0**; spend is reserved for the aggregator. A cheap/local diverse panel + a capable judge/synth answers for cents vs. ~10–100× for always calling one top-tier model. (Ratios depend on live pricing → `[PLACEHOLDER]` in `docs/FACTS.md`.)
+- **Why cost can be a fraction:** cost is additive, so the win comes from panel composition. Local models cost **$0**; spend is reserved for the aggregator. A cheap/local diverse panel + a capable judge/synth answers for cents vs. ~10–100× for always calling one top-tier model. (Ratios depend on live pricing; see the populated-but-pending-verification table in [`docs/FACTS.md`](docs/FACTS.md).)
 - **Why quality holds — only on the right tasks:** ensembling beats any single panel member when errors are **uncorrelated** and **verifying is easier than generating** (the generator–verifier gap) — exactly audits / compare / find-flaws / research / architecture critique. It does **not** conjure capability no panel member has, and it inherits *correlated* blind spots.
 - **Honest framing:** near-frontier on the target task class — yes; universal "frontier-level on everything" — no. This is **inference-time ensemble orchestration, not true neural MoE.** No marketing claims in docs.
 - **Make it measurable:** `fusion_metadata.estimated_cost_usd` + per-model latency let the operator A/B presets to find their quality/cost operating point. `auto` mode also saves money by skipping Fusion on simple tasks.
@@ -80,4 +80,4 @@ normalize  → decide mode → select panel → run panel (parallel) → cost ga
 - **Native Anthropic / Gemini adapters are real but light** — they cover the chat-completion path needed for panel/judge/synth, not the providers' full feature surface.
 - **Streaming is single-model pass-through only** — fusion + `stream:true` returns `stream_not_supported` (decided at dispatch). Streaming a multi-stage pipeline is out of v1 scope.
 - **Web search is a stub / roadmap** — not executed in v1.
-- **Pricing values need verification** — every number in `docs/FACTS.md` is `[PLACEHOLDER — verify]`. Treat correcting them as **escalate-to-owner** (it's the first item in `docs/PROGRESS.md` open decisions); the values feed the cost cap, so a guess here has real financial consequences.
+- **Pricing values need verification** — `docs/FACTS.md` now contains a populated pricing table sourced from `src/providers/pricing.ts`, but every value still has status `PENDING` until verified against the live provider pricing pages. Treat correcting them as **escalate-to-owner** (it's the first item in `docs/PROGRESS.md` open decisions); the values feed the cost cap, so a guess here has real financial consequences.

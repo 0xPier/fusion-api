@@ -30,13 +30,13 @@
 | Registered providers | openai, openrouter, anthropic (native), gemini (native) [if keyed]; ollama, lmstudio, llamacpp (always) |
 | Default preset | quality (env `FUSION_DEFAULT_PRESET`) |
 | Last passing test count | 71 (Vitest, mock-driven) |
-| Toolchain | tsc clean · Biome clean · 71/71 tests green |
+| Toolchain | Node 24.16.0 · tsc clean · Biome clean · 71/71 tests green |
 
 ---
 
 ## Owner's open decisions
 
-- [ ] **Verify / confirm model pricing values** — `docs/FACTS.md` pricing is `[PLACEHOLDER — verify]`; the owner must confirm against live provider pricing pages before any cost number is treated as authoritative.
+- [ ] **Verify / confirm model pricing values** — `docs/FACTS.md` now contains a populated pricing table (sourced from `src/providers/pricing.ts`) with per-row verification status and source URLs; the owner must visit each URL, confirm input/output prices, mark rows `VERIFIED`, and mirror corrections into `src/providers/pricing.ts`.
 
 ---
 
@@ -46,6 +46,8 @@
 | --- | --- | --- |
 | 2026-06-14 | — | repo scaffolded, control-layer docs created |
 | 2026-06-14 | 0–6 | full Fusion API implemented (TS/Hono); 71 tests green; tsc + Biome clean; README written |
+| 2026-06-15 | 6 | re-verified on Node 24.16.0: `npm run build`, `npm test` (71/71), `biome check` all pass |
+| 2026-06-15 | 6 | populated `docs/FACTS.md` pricing table from `src/providers/pricing.ts`; added per-row verification status, source URLs, and owner checklist; updated `docs/AGENT_CONTEXT.md` and `docs/PROGRESS.md` open decision |
 
 ---
 
